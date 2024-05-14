@@ -81,11 +81,19 @@ void displayAverageSpeed(){
   display.println(averageSpeedKmph, 2);
 }
 
+void displayError(){
+  display.setTextColor(WHITE);
+  display.setTextSize(1);
+  display.setCursor(1, 1);
+  display.println("Could not update current location, no satelites available");
+}
+
 void loop() {
   while (GPSSerial.available()) {
     char c = GPSSerial.read();
     if (gps.encode(c)) {
       if (gps.location.isUpdated() && gps.location.isValid()) {
+        Serial.println("Current Speed (km/h): ");
         unsigned long currentMicros = micros();
         unsigned long deltaTimeMicros = currentMicros - previousMicros;
         previousMicros = currentMicros;
@@ -126,6 +134,11 @@ void loop() {
         display.display();
 
         Serial.print("\r\n\n");
+      }else{
+        Serial.println("Could not update current location, no satelites available");
+        display.clearDisplay();
+        displayError();
+        display.display();
       }
     }
   }
